@@ -110,6 +110,10 @@ function executeCommand(command) {
 1. 稳健投资者：分批布局低估值蓝筹
 2. 进取投资者：关注AI、新能源汽车  
 3. 总体仓位：70%-80%`;
+// 天玑星 - ETF投资专家
+else if (command.includes('etf') || command.includes('ETF') || command.includes('指数基金'))  {
+  return tianjiETFExpert(command);
+}    
   } else if (command.includes('状态') || command.includes('系统')) {
     return `⚙️ **【摇光星 - 系统运维智能体】**
 
@@ -128,4 +132,179 @@ function executeCommand(command) {
 
 💡 提示：发送"测试"查看完整功能`;
   }
+}
+// 天玑星 - ETF投资专家完整功能
+function tianjiETFExpert(command) {
+  // ETF数据库
+  const ETFDatabase = {
+    // 宽基ETF
+    broad: [
+      { code: '510300', name: '沪深300ETF', category: '大盘宽基', expense: 0.15 },
+      { code: '510050', name: '上证50ETF', category: '大盘蓝筹', expense: 0.15 },
+      { code: '159919', name: '沪深300ETF', category: '大盘宽基', expense: 0.15 },
+      { code: '159915', name: '创业板ETF', category: '成长宽基', expense: 0.15 }
+    ],
+    // 行业ETF
+    sector: [
+      { code: '512760', name: '半导体ETF', category: '科技', expense: 0.15 },
+      { code: '515000', name: '科技ETF', category: '科技', expense: 0.15 },
+      { code: '512690', name: '酒ETF', category: '消费', expense: 0.15 },
+      { code: '512880', name: '证券ETF', category: '金融', expense: 0.15 }
+    ],
+    // 跨境ETF
+    crossBorder: [
+      { code: '513050', name: '中概互联ETF', category: '跨境科技', expense: 0.25 },
+      { code: '513100', name: '纳指ETF', category: '美股', expense: 0.25 },
+      { code: '513500', name: '标普500ETF', category: '美股', expense: 0.25 }
+    ]
+  };
+
+  // ETF分析功能
+  if (command.includes('分析') || command.includes('研究')) {
+    const etfAnalysis = analyzeETFMarket();
+    return etfAnalysis;
+  }
+  
+  // ETF推荐功能
+  else if (command.includes('推荐') || command.includes('优选')) {
+    return generateETFRecommendations();
+  }
+  
+  // ETF组合功能
+  else if (command.includes('组合') || command.includes('配置')) {
+    return buildETFPortfolio();
+  }
+  
+  // ETF费率比较
+  else if (command.includes('费率') || command.includes('成本')) {
+    return compareETFExpenses();
+  }
+  
+  // 默认ETF市场概览
+  else {
+    return getETFMarketOverview();
+  }
+}
+
+// ETF市场深度分析
+function analyzeETFMarket() {
+  return `🔮 **【天玑星 - ETF深度分析报告】**
+
+**📊 市场结构分析：**
+🏦 宽基ETF：规模占比45%，资金净流入持续
+📈 行业ETF：科技类ETF交易活跃，半导体ETF日成交超10亿
+🌍 跨境ETF：中概互联ETF估值修复，资金关注度提升
+
+**💰 资金流向监控：**
+✅ 净流入TOP3：科创50ETF、半导体ETF、恒生科技ETF
+📉 净流出：传统行业ETF出现资金流出
+
+**🎯 天玑专业研判：**
+• 宽基ETF：科创50ETF具备长期配置价值
+• 行业ETF：AI算力相关ETF景气度上行
+• 跨境ETF：港股科技ETF估值处于历史低位
+
+💡 发送"ETF推荐"获取具体产品建议`;
+}
+
+// ETF产品推荐
+function generateETFRecommendations() {
+  return `🔮 **【天玑星 - ETF优选推荐】**
+
+🏆 **核心配置推荐（长期持有）：**
+1. 科创50ETF(588000) - 科技创新核心资产
+   📈 定位：中国版纳斯达克
+   💰 费率：0.15%（行业最低）
+   🎯 适合：长期成长投资
+
+2. 沪深300ETF(510300) - 市场基准配置
+   📈 定位：A股市场晴雨表
+   💰 费率：0.15%
+   🎯 适合：稳健基础配置
+
+📊 **行业轮动推荐（阶段性机会）：**
+1. 半导体ETF(512760) - 国产替代核心
+2. 新能源ETF(515030) - 绿色转型受益
+3. 恒生科技ETF(513130) - 估值修复机会
+
+⚡ 发送"ETF组合"获取具体配置比例`;
+}
+
+// ETF组合构建
+function buildETFPortfolio() {
+  return `🔮 **【天玑星 - ETF智能组合】**
+
+💼 **核心-卫星配置方案：**
+
+**核心持仓（60%）：**
+• 科创50ETF(588000)：30% - 成长引擎
+• 沪深300ETF(510300)：20% - 市场基准  
+• 恒生科技ETF(513130)：10% - 跨境分散
+
+**卫星策略（40%）：**
+• 半导体ETF(512760)：15% - 科技周期
+• 新能源ETF(515030)：10% - 绿色主题
+• 证券ETF(512880)：8% - 市场情绪
+• 现金：7% - 灵活机动
+
+**🎯 组合特点：**
+✅ 成长与价值均衡
+✅ 行业适度分散
+✅ 跨境配置降低风险
+✅ 保留现金应对波动
+
+💡 发送"ETF费率"了解成本优化方案`;
+}
+
+// ETF费率比较
+function compareETFExpenses() {
+  return `🔮 **【天玑星 - ETF费率分析】**
+
+💰 **费率对比（管理费+托管费）：**
+
+**宽基ETF费率榜：**
+🥇 科创50ETF(588000)：0.15% + 0.05% = 0.20%
+🥈 沪深300ETF(510300)：0.15% + 0.05% = 0.20%
+🥉 创业板ETF(159915)：0.15% + 0.05% = 0.20%
+
+**行业ETF费率榜：**
+🥇 半导体ETF(512760)：0.15% + 0.05% = 0.20%
+🥈 科技ETF(515000)：0.15% + 0.05% = 0.20%
+🥉 证券ETF(512880)：0.15% + 0.05% = 0.20%
+
+**跨境ETF费率榜：**
+🥇 中概互联ETF(513050)：0.25% + 0.05% = 0.30%
+🥈 纳指ETF(513100)：0.25% + 0.05% = 0.30%
+
+**💎 天玑费率优化建议：**
+• 优先选择费率0.20%及以下产品
+• 长期持有关注复利效应
+• 大额资金费率差异影响显著`;
+}
+
+// ETF市场概览
+function getETFMarketOverview() {
+  return `🔮 **【天玑星 - ETF市场全景】**
+
+🌐 **全市场ETF概览：**
+📈 总规模：2.1万亿元
+📊 产品数量：超过800只
+💰 日均成交：约800亿元
+
+**📋 分类表现：**
+🏦 宽基ETF：规模稳定，资金持续流入
+📱 行业ETF：科技类领涨，轮动机会明显
+🌍 跨境ETF：估值修复进行中，关注港股机会
+⚡ Smart Beta：因子投资逐渐成熟
+
+**🎯 天玑专业视角：**
+• 当前时点：ETF配置黄金期
+• 核心策略：定投+核心卫星
+• 风险提示：关注流动性风险
+
+💡 可用指令：
+• ETF分析 - 深度市场研究
+• ETF推荐 - 优选产品清单  
+• ETF组合 - 智能配置方案
+• ETF费率 - 成本比较分析`;
 }
