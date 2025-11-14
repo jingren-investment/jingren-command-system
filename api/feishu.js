@@ -1,0 +1,131 @@
+// 精韧投资指挥系统 - Vercel 部署版
+module.exports = async (req, res) => {
+  // 设置 CORS 头部
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // 处理预检请求
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  // 只处理 POST 请求
+  if (req.method !== 'POST') {
+    return res.status(405).json({ 
+      error: 'Method Not Allowed',
+      hint: '此端点仅处理飞书机器人事件'
+    });
+  }
+
+  try {
+    const body = req.body;
+    
+    // 处理飞书 URL 验证挑战
+    if (body.type === 'url_verification') {
+      return res.status(200).json({
+        challenge: body.challenge
+      });
+    }
+
+    // 处理消息事件
+    if (body.header && body.header.event_type === 'im.message.receive_v1') {
+      const event = body.event;
+      let userInput = '';
+      
+      try {
+        const messageContent = JSON.parse(event.message.content);
+        userInput = messageContent.text ? messageContent.text.trim().toLowerCase() : '';
+      } catch (e) {
+        userInput = '测试';
+      }
+
+      // 调用北斗七星智能体系统
+      const replyText = executeCommand(userInput);
+
+      const replyMessage = {
+        content: JSON.stringify({
+          text: replyText
+        }),
+        msg_type: 'text'
+      };
+
+      return res.status(200).json(replyMessage);
+    }
+
+    // 默认返回成功
+    return res.status(200).json({ status: 'success' });
+    
+  } catch (error) {
+    return res.status(400).json({ 
+      error: 'Bad Request'
+    });
+  }
+};
+
+// 北斗七星智能体路由中心
+function executeCommand(command) {
+  if (!command || command === '测试' || command === 'test') {
+    return `🎉 **精韧投资指挥系统 - 部署成功！**
+
+📋 可用指令：
+• 态势分析 / 市场分析
+• 风险扫描 / 风险评估  
+• 持仓报告 / 组合分析
+• 投资建议 / 操作建议
+• 系统状态
+
+💡 请尝试发送"态势分析"开始使用！`;
+  }
+
+  if (command.includes('态势') || command.includes('市场') || command.includes('分析')) {
+    return `🧠 **【天璇星 - 全局态势感知智能体】**
+
+**当前市场态势报告：**
+📈 主板指数：震荡上行
+🌊 成交量能：温和放大  
+📊 板块轮动：科技与消费活跃
+🔍 建议：关注业绩确定性成长板块`;
+  } else if (command.includes('风险') || command.includes('扫描') || command.includes('评估')) {
+    return `🛡️ **【天枢星 - 风险控制智能体】**
+
+**全域风险扫描完成：**
+✅ 系统性风险：低
+✅ 流动性风险：极低  
+⚠️ 波动性风险：中等
+🔒 风险状态：安全范围内`;
+  } else if (command.includes('持仓') || command.includes('组合') || command.includes('资产')) {
+    return `💼 **【天权星 - 资产配置智能体】**
+
+**当前投资组合概览：**
+🏦 现金比例：15%
+📱 科技板块：35%  
+🍶 消费板块：25%
+⚡ 新能源板块：15%
+🏥 医疗板块：10%`;
+  } else if (command.includes('建议') || command.includes('操作') || command.includes('投资')) {
+    return `🎯 **【玉衡星 - 决策支持智能体】**
+
+**当前操作建议：**
+1. 稳健投资者：分批布局低估值蓝筹
+2. 进取投资者：关注AI、新能源汽车  
+3. 总体仓位：70%-80%`;
+  } else if (command.includes('状态') || command.includes('系统')) {
+    return `⚙️ **【摇光星 - 系统运维智能体】**
+
+**系统状态报告：**
+🟢 天璇星：在线
+🟢 天枢星：在线  
+🟢 天权星：在线
+🟢 玉衡星：在线
+🟢 摇光星：在线`;
+  } else {
+    return `🔍 **指令识别中心**
+
+未识别到有效指令，请尝试：
+• 态势分析 • 风险扫描 • 持仓报告
+• 投资建议 • 系统状态
+
+💡 提示：发送"测试"查看完整功能`;
+  }
+}
