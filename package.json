@@ -1,0 +1,13 @@
+{
+  "name": "jingren-command-system",
+  "version": "1.0.0",
+  "description": "精韧投资指挥系统 - 北斗七星智能体生态系统",
+  "type": "module",
+  "scripts": {
+    "dev": "node api/feishu.js"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": "18.x"
+  }
+}
