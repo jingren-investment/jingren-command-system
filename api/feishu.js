@@ -1,37 +1,74 @@
+// 精韧指挥系统 - 飞书机器人 API
+// 北斗七星智能体生态系统
+
 export default async function handler(request, response) {
-  try {
-    // 飞书验证处理
-    if (request.method === 'POST') {
+  console.log('=== 收到请求 ===');
+  console.log('方法:', request.method);
+  console.log('URL:', request.url);
+  
+  // 设置 CORS 头部
+  response.setHeader('Access-Control-Allow-Origin', '*');
+  response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+  // 处理 OPTIONS 预检请求
+  if (request.method === 'OPTIONS') {
+    console.log('处理 OPTIONS 预检请求');
+    return response.status(200).end();
+  }
+  
+  // 处理 GET 请求 - 用于测试和验证
+  if (request.method === 'GET') {
+    console.log('处理 GET 测试请求');
+    return response.status(200).json({
+      success: true,
+      message: '精韧指挥系统 API 运行正常',
+      system: '北斗七星智能体生态系统',
+      timestamp: new Date().toISOString(),
+      endpoint: '飞书机器人接口',
+      status: '等待飞书平台验证'
+    });
+  }
+  
+  // 处理 POST 请求
+  if (request.method === 'POST') {
+    try {
+      console.log('处理 POST 请求');
+      
       const body = await request.json();
+      console.log('请求体:', JSON.stringify(body, null, 2));
       
       // 飞书 URL 验证
       if (body.type === 'url_verification') {
+        console.log('处理飞书 URL 验证, challenge:', body.challenge);
         return response.status(200).json({
           challenge: body.challenge
         });
       }
       
-      // 处理飞书事件回调
-      console.log('飞书事件:', body);
-      
-      // 这里添加您的业务逻辑
+      // 其他飞书事件
+      console.log('处理飞书事件, 类型:', body.type);
       return response.status(200).json({ 
-        success: true,
-        message: '事件处理成功'
+        code: 0,
+        msg: 'success',
+        handled: true,
+        event_type: body.type || 'unknown'
+      });
+      
+    } catch (error) {
+      console.error('处理 POST 请求错误:', error);
+      return response.status(500).json({
+        code: 1,
+        msg: error.message
       });
     }
-    
-    // 其他 HTTP 方法返回错误
-    return response.status(405).json({
-      error: 'Method Not Allowed',
-      hint: '此端点仅处理飞书机器人事件'
-    });
-    
-  } catch (error) {
-    console.error('API 错误:', error);
-    return response.status(500).json({
-      success: false,
-      error: error.message
-    });
   }
+  
+  // 其他方法返回错误
+  console.log('不允许的方法:', request.method);
+  return response.status(405).json({
+    error: 'Method Not Allowed',
+    hint: '此端点处理 GET 测试和飞书机器人 POST 事件',
+    allowed_methods: ['GET', 'POST', 'OPTIONS']
+  });
 }
