@@ -1,68 +1,57 @@
-// 精韧指挥系统 - 飞书机器人 API (超高速响应版)
-// 北斗七星智能体生态系统 - 专为3秒超时优化
-
+// 精韧指挥系统 - 飞书机器人专用 API
 export default async function handler(request, response) {
-  // 立即开始处理，不等待任何异步操作
-  const startTime = Date.now();
+  console.log('=== 飞书回调请求 ===');
+  console.log('方法:', request.method);
+  console.log('Headers:', request.headers);
   
-  // 设置 CORS 头部
+  // 设置响应头
+  response.setHeader('Content-Type', 'application/json');
   response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   
-  // 处理 OPTIONS 预检请求 - 立即返回
+  // 处理 OPTIONS 预检请求
   if (request.method === 'OPTIONS') {
+    console.log('处理 OPTIONS 预检请求');
     return response.status(200).end();
   }
   
-  // 处理 GET 请求 - 简化版本
-  if (request.method === 'GET') {
-    return response.status(200).json({
-      success: true,
-      message: '精韧指挥系统 API 运行正常',
-      timestamp: new Date().toISOString()
-    });
-  }
-  
-  // 处理 POST 请求 - 超高速版本
+  // 只处理 POST 请求
   if (request.method === 'POST') {
     try {
-      let body = '';
+      const body = await request.json();
+      console.log('飞书请求体:', JSON.stringify(body, null, 2));
       
-      // 超快速读取请求体
-      for await (const chunk of request) {
-        body += chunk;
-        // 如果读取时间超过1秒，立即处理
-        if (Date.now() - startTime > 1000) break;
-      }
-      
-      const data = JSON.parse(body);
-      
-      // 飞书 URL 验证 - 最高优先级处理
-      if (data.type === 'url_verification') {
-        // 立即返回，不进行任何其他处理
+      // 飞书 URL 验证（必须立即返回 challenge）
+      if (body.type === 'url_verification') {
+        console.log('处理飞书 URL 验证, challenge:', body.challenge);
+        // 飞书要求立即返回 challenge，不能有任何延迟
         return response.status(200).json({
-          challenge: data.challenge
+          challenge: body.challenge
         });
       }
       
-      // 其他事件快速响应
+      // 其他飞书事件处理
+      console.log('处理飞书事件, 类型:', body.type);
+      // 飞书要求所有事件都要立即返回成功
       return response.status(200).json({ 
         code: 0,
         msg: 'success'
       });
       
     } catch (error) {
-      // 错误时也快速响应
+      console.error('处理飞书请求错误:', error);
+      // 即使出错也要立即返回，避免超时
       return response.status(200).json({
-        code: 0,
-        msg: 'success'
+        code: 1,
+        msg: '处理失败'
       });
     }
   }
   
-  // 其他方法快速拒绝
+  // 其他方法立即返回错误
   return response.status(405).json({
-    error: 'Method Not Allowed'
+    code: 1,
+    msg: 'Method Not Allowed'
   });
 }
