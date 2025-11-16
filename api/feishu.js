@@ -1,4 +1,4 @@
-// 精韧指挥系统 - 飞书机器人 API
+// 精韧指挥系统 - 飞书机器人 API (Vercel 特调版)
 // 北斗七星智能体生态系统
 
 export default async function handler(request, response) {
@@ -35,24 +35,42 @@ export default async function handler(request, response) {
     try {
       console.log('处理 POST 请求');
       
-      const body = await request.json();
-      console.log('请求体:', JSON.stringify(body, null, 2));
+      // Vercel 环境特调 - 正确处理请求体
+      let body = '';
+      for await (const chunk of request) {
+        body += chunk;
+      }
+      
+      console.log('原始请求体:', body);
+      
+      let data;
+      try {
+        data = JSON.parse(body);
+      } catch (parseError) {
+        console.error('JSON 解析错误:', parseError);
+        return response.status(400).json({
+          code: 1,
+          msg: '无效的 JSON 格式'
+        });
+      }
+      
+      console.log('解析后的数据:', JSON.stringify(data, null, 2));
       
       // 飞书 URL 验证
-      if (body.type === 'url_verification') {
-        console.log('处理飞书 URL 验证, challenge:', body.challenge);
+      if (data.type === 'url_verification') {
+        console.log('处理飞书 URL 验证, challenge:', data.challenge);
         return response.status(200).json({
-          challenge: body.challenge
+          challenge: data.challenge
         });
       }
       
       // 其他飞书事件
-      console.log('处理飞书事件, 类型:', body.type);
+      console.log('处理飞书事件, 类型:', data.type);
       return response.status(200).json({ 
         code: 0,
         msg: 'success',
         handled: true,
-        event_type: body.type || 'unknown'
+        event_type: data.type || 'unknown'
       });
       
     } catch (error) {
